@@ -1,2 +1,2 @@
-keyboard==0.13.5
+pandas==1.5.3
 pynput==1.7.6
