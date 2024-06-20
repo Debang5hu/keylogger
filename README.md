@@ -13,7 +13,7 @@ Run the FTP Server In Linux.
 
 ## 🖱 To start the FTP Server:  
 
-[README](FTPServer/FTP.md)
+[README](FTPServer/README.md)
 
 
 ## 👥 Client:  
