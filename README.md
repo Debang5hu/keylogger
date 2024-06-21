@@ -4,7 +4,7 @@ A simple keylogger made in python that send the keystrokes to attacker's server
 
 ## 🐼 How It Works  
 
-It captures the Keylogs and store it in locally and periodically upload the file to the FTP Server.  
+It captures the Keylogs and store it locally and periodically upload the file to the FTP Server.  
 
 
 ## 🛠️ Usage  
@@ -48,9 +48,11 @@ Run the FTP Server In Linux.
 
 * Language Used: __Python3__  
 * IDE: __VS Code__  
-* OS Used: __Linux (Debian)__  
+* OS Used: __Linux (Debian)__ ,__Windows 10__  
+* __Virtualbox__   
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![VS CODE](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white) ![Debian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)  
+
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![VS CODE](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white) ![Debian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)  ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)  ![Virtualbox](https://img.shields.io/badge/VirtualBox-183A61.svg?style=for-the-badge&logo=VirtualBox&logoColor=white)  
 
 ## 💬 To Reach Me  
 

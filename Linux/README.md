@@ -5,11 +5,6 @@
 It captures the Keylogs and store it in locally and periodically upload the file to the FTP Server.  
 
 
-## 🥷 To Do  
-
-* To Bypass AntiVirus  
-
-
 ## ⚙️ Usage  
 
 __Note:__ Change the __SERVER_ADDRESS__ to your FTP Server's Address and set __INTERVAL__ according to you time requirements before making it executable.(Both the variables are in Keylogger.py)  
