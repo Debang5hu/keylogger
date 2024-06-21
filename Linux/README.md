@@ -2,7 +2,7 @@
 
 ## 🐼 How It Works  
 
-It captures the Keylogs and store it in locally and periodically upload the file to the FTP Server.  
+It captures the Keylogs and store it locally and periodically upload the file to the FTP Server.  
 
 
 ## ⚙️ Usage  
