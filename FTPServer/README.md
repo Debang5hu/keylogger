@@ -1,32 +1,9 @@
-# 🛠️ FTP Server Setup  
-
-We will be using Pyftpdlib (Python FTP server) to set our FTP Server.  
-
----  
-
-## 🐍🛠️ Pyftpdlib Setup  
-
-* Change your directory to '__File__' to save the received file from the client
+# 🐍🛠️ FTP Server Setup  
 
 ```
-# change dir to 'File'
-cd File
-```  
-
-* To install python's __pyftpdlib__ module  
-
+# To start the FTP Server
+python3 FTPServer.py -u username -p password --host hostname/IP
 ```
-# to install the module 
-pip install pyftpdlib
-
-```  
-
-## 🗄️ Run the Server  
-
-```
-# To start the FTP Server  
-python3 -m pyftpdlib -w --user=your_username --password=your_password
-```  
 
 
 ## 📝 Note:  
