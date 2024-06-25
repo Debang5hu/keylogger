@@ -2,7 +2,7 @@
 
 ## 🐼 How It Works  
 
-It captures the Keylogs and store it in locally and periodically upload the file to the FTP Server.  
+It capture the Keylogs,store it locally and periodically upload the file to the Server.  
 
 
 ## 🥷 To Do  
@@ -13,8 +13,7 @@ It captures the Keylogs and store it in locally and periodically upload the file
 
 ## ⚙️ How to Compile  
 
-__Note:__ Change the __SERVER_ADDRESS__ to your FTP Server's Address and set __INTERVAL__ according to you time requirements before making it executable.(Both the variables are in Keylogger.py)  
-Also change the __USER__  and __PASSWD__  according to your FTP User and Pass.  
+__Note:__ Change the __SERVER_ADDRESS__ to your Server's Address and set __INTERVAL__ according to you time requirements before making it executable.(Both the variables are in Keylogger.py)  
 
 
 Compile the script using __pyinstaller__ to make the executable file.  
@@ -32,8 +31,9 @@ pyinstaller --noconsole --onefile keylogger.py
 * Language Used: __Python3__  
 * IDE: __VS Code__  
 * OS Used: __Windows 10__  
+* Virtualization: __Virtualbox__  
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![VS CODE](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)  
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![VS CODE](https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![Virtualbox](https://img.shields.io/badge/VirtualBox-183A61.svg?style=for-the-badge&logo=VirtualBox&logoColor=white)  
 
 ## 💬 To Reach Me  
 

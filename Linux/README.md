@@ -2,13 +2,13 @@
 
 ## 🐼 How It Works  
 
-It captures the Keylogs and store it locally and periodically upload the file to the FTP Server.  
+It capture the Keylogs,store it locally and periodically upload the file to the Server.  
 
 
 ## ⚙️ Usage  
 
-__Note:__ Change the __SERVER_ADDRESS__ to your FTP Server's Address and set __INTERVAL__ according to you time requirements before making it executable.(Both the variables are in Keylogger.py)  
-Also change the __USER__  and __PASSWD__  according to your FTP User and Pass.    
+__Note:__ Change the __SERVER_ADDRESS__ to your Server's Address and set __INTERVAL__ according to you time requirements before making it executable.(Both the variables are in Keylogger.py)  
+
 
 ```
 python3 keylogger.py
