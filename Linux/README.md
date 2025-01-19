@@ -4,6 +4,7 @@
 
 It capture the Keylogs, store it locally and periodically upload the file to the Server.  
 
+---  
 
 ### ⚙️ Usage  
 
@@ -15,10 +16,14 @@ Compile the script using __pyinstaller__ to make the executable file.
 pyinstaller --noconsole --onefile keylogger.py
 ```  
 
+---  
+
 ### 🐞 Bug  
    
 * Feel free to report any Bug  
-  
+
+---  
+
 ### 💻 My Set-Up  
 
 * Language Used: __Python3__  
@@ -27,6 +32,7 @@ pyinstaller --noconsole --onefile keylogger.py
 
 ![Python](https://img.shields.io/badge/Python-14354C?style=flat&logo=python&logoColor=white) ![VS Codium](https://img.shields.io/badge/VSCodium-2F80ED?style=flat&logo=VSCodium&logoColor=white) ![Debian](https://img.shields.io/badge/Debian-A81D33?style=flat&logo=debian&logoColor=white)  
  
+---  
 
 ### 💬 To Reach Me  
 
