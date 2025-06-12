@@ -1,4 +1,4 @@
 PyGObject==3.42.1
 pynput==1.7.6
 pyperclip==1.8.2
-Requests==2.32.3
+Requests==2.32.4
